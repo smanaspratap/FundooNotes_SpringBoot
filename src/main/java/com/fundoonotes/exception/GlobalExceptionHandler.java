@@ -53,7 +53,34 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnauthorizedAccess(
             UnauthorizedAccessException ex, HttpServletRequest request) {
         log.warn("UnauthorizedAccessException: {}", ex.getMessage());
-        return buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request);
+
+        // Token-related auth failures → 401; ownership violations → 403
+        HttpStatus status = ex.getMessage().contains("token") || ex.getMessage().contains("Token")
+                ? HttpStatus.UNAUTHORIZED
+                : HttpStatus.FORBIDDEN;
+
+        return buildErrorResponse(status, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(InvalidOtpException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidOtp(
+            InvalidOtpException ex, HttpServletRequest request) {
+        log.warn("InvalidOtpException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(ReminderNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleReminderNotFound(
+            ReminderNotFoundException ex, HttpServletRequest request) {
+        log.warn("ReminderNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(BatchProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleBatchProcessing(
+            BatchProcessingException ex, HttpServletRequest request) {
+        log.error("BatchProcessingException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

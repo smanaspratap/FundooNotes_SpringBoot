@@ -2,8 +2,10 @@ package com.fundoonotes.mapper;
 
 import com.fundoonotes.dto.request.NoteRequestDto;
 import com.fundoonotes.dto.response.NoteResponseDto;
+import com.fundoonotes.dto.response.ReminderResponseDto;
 import com.fundoonotes.dto.response.UserResponseDto;
 import com.fundoonotes.entity.Note;
+import com.fundoonotes.entity.Reminder;
 import com.fundoonotes.entity.User;
 
 /**
@@ -64,6 +66,23 @@ public final class EntityDtoMapper {
                 .title(dto.getTitle())
                 .description(dto.getDescription())
                 .user(user)
+                .build();
+    }
+
+    /**
+     * Convert a Reminder entity to ReminderResponseDto.
+     *
+     * @param reminder the reminder entity
+     * @return the reminder response DTO
+     */
+    public static ReminderResponseDto toReminderResponseDto(Reminder reminder) {
+        return ReminderResponseDto.builder()
+                .id(reminder.getId())
+                .noteId(reminder.getNote().getId())
+                .noteTitle(reminder.getNote().getTitle())
+                .reminderTime(reminder.getReminderTime())
+                .notified(reminder.isNotified())
+                .createdAt(reminder.getCreatedAt())
                 .build();
     }
 }

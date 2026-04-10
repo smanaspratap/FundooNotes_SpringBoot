@@ -94,6 +94,24 @@ public class JwtUtil {
     }
 
     /**
+     * Get the remaining TTL (in milliseconds) of a valid token.
+     * Used for blacklisting tokens with correct expiry duration.
+     *
+     * @param token the JWT token string
+     * @return remaining TTL in milliseconds, or 0 if already expired
+     */
+    public long getRemainingTtlMs(String token) {
+        try {
+            Claims claims = parseClaims(token);
+            long expiry = claims.getExpiration().getTime();
+            long remaining = expiry - System.currentTimeMillis();
+            return Math.max(remaining, 0);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /**
      * Parse and return the claims from a JWT token.
      */
     private Claims parseClaims(String token) {
